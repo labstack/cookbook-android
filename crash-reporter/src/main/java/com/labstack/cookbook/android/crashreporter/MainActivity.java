@@ -7,8 +7,8 @@ import android.widget.Button;
 
 import com.google.android.gms.iid.InstanceID;
 import com.labstack.Fields;
-import com.labstack.Log;
 import com.labstack.android.Client;
+import com.labstack.android.Log;
 import com.labstack.cookbook.android.R;
 
 import java.io.PrintWriter;
