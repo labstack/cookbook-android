@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        // Initialize the mqtt service
+        // Initialize LabStack mqtt service
         client = new Client(getApplicationContext(), "<ACCOUNT_ID>", "<API_KEY>");
         clientId = InstanceID.getInstance(this).getId();
         mqtt = client.mqtt(clientId);

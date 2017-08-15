@@ -1,5 +1,6 @@
 package com.labstack.cookbook.android.crashreporter;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -26,7 +27,10 @@ public class MainActivity extends AppCompatActivity {
         log.setDispatchInterval(5);
         log.getFields()
                 .add("app_name", "crash-reporter")
-                .add("app_id", InstanceID.getInstance(this).getId());
+                .add("app_id", InstanceID.getInstance(this).getId())
+                .add("device_type", "Android")
+                .add("device_release", Build.VERSION.RELEASE)
+                .add("device_sdk", Build.VERSION.SDK_INT);
 
         // Automatically report crash (fatal error)
         Button crashButton = (Button) findViewById(R.id.crash_button);
