@@ -12,23 +12,23 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/error_button"
+            android:id="@+id/crash_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FF9800"
+            android:background="#F44336"
             android:padding="8dp"
-            android:text="Report Error"
+            android:text="Crash &amp; Report"
             android:textColor="#FFF"
             android:textSize="16dp" />
 
         <Button
-            android:id="@+id/crash_button"
+            android:id="@+id/error_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="#FF9800"
             android:layout_marginLeft="8dp"
-            android:background="#F44336"
             android:padding="8dp"
-            android:text="Crash &amp; Report"
+            android:text="Report Error"
             android:textColor="#FFF"
             android:textSize="16dp" />
     </LinearLayout>
