@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize log service
-        client = new Client(getApplicationContext(), "<ACCOUNT_ID>", "<API_KEY>");
+        client = new Client(this, "<ACCOUNT_ID>", "<API_KEY>");
         log = client.log();
         log.setDispatchInterval(5);
         log.getFields()

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String tag = "android-tracker";
+    private static final String tag = "location-tracker";
     private static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected Client client;
     protected Mqtt mqtt;
@@ -52,9 +52,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         // Initialize LabStack mqtt service
-        client = new Client(getApplicationContext(), "<ACCOUNT_ID>", "<API_KEY>");
+        client = new Client(this, "<ACCOUNT_ID>", "<API_KEY>");
         clientId = InstanceID.getInstance(this).getId();
         mqtt = client.mqtt(clientId);
         mqtt.onConnect(new MqttConnectHandler() {
