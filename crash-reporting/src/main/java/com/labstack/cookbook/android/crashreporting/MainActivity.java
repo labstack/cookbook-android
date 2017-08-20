@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         log = client.log();
         log.setDispatchInterval(5);
         log.getFields()
-                .add("app_name", "crash-reporter")
+                .add("app_name", "crash-reporting")
                 .add("app_id", InstanceID.getInstance(this).getId())
                 .add("device_type", "Android")
                 .add("device_release", Build.VERSION.RELEASE)

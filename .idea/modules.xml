@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cookbook-android.iml" filepath="$PROJECT_DIR$/cookbook-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/crash-reporting/crash-reporter.iml" filepath="$PROJECT_DIR$/crash-reporting/crash-reporter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/crash-reporting/crash-reporting.iml" filepath="$PROJECT_DIR$/crash-reporting/crash-reporting.iml" />
       <module fileurl="file://$PROJECT_DIR$/location-tracker/location-tracker.iml" filepath="$PROJECT_DIR$/location-tracker/location-tracker.iml" />
       <module fileurl="file://$PROJECT_DIR$/push-notification/push-notification.iml" filepath="$PROJECT_DIR$/push-notification/push-notification.iml" />
     </modules>
