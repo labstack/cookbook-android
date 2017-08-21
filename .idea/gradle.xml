@@ -8,7 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/crash-reporting" />
+            <option value="$PROJECT_DIR$/error-reporting" />
             <option value="$PROJECT_DIR$/location-tracker" />
             <option value="$PROJECT_DIR$/push-notification" />
           </set>

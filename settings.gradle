@@ -1,1 +1,1 @@
-include ':location-tracker', ':crash-reporting', ':push-notification'
+include ':location-tracker', ':error-reporting', ':push-notification'
