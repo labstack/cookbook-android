@@ -9,17 +9,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.iid.InstanceID;
-import com.labstack.MqttConnectHandler;
-import com.labstack.MqttMessageHandler;
+import com.labstack.ConnectConnectionHandler;
+import com.labstack.ConnectMessageHandler;
 import com.labstack.android.Client;
-import com.labstack.android.Mqtt;
-import com.labstack.cookbook.android.pushnotification.R;
+import com.labstack.android.Connect;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
     protected Client client;
-    protected Mqtt mqtt;
+    protected Connect connect;
     private String clientId;
     private NotificationManager notificationManager;
     private int notificationId;
@@ -29,17 +28,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize LabStack mqtt service
+        // Initialize LabStack connect service
         client = new Client(this, "ie8t5fgcb6s2vaxgg02y", "VouXFKK2A1TkuMUVz3wV2zvmapIdRuFM");
         clientId = InstanceID.getInstance(this).getId();
-        mqtt = client.mqtt(clientId);
-        mqtt.onConnect(new MqttConnectHandler() {
+        connect = client.connect(clientId);
+        connect.onConnect(new ConnectConnectionHandler() {
             @Override
             public void handle(boolean reconnect, String serverURI) {
-                mqtt.subscribe("broadcast");
+                connect.subscribe("broadcast");
             }
         });
-        mqtt.onMessage(new MqttMessageHandler() {
+        connect.onMessage(new ConnectMessageHandler() {
             @Override
             public void handle(String topic, byte[] payload) {
                 // Notify

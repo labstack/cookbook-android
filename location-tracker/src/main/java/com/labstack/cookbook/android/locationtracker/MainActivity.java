@@ -19,10 +19,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.gms.iid.InstanceID;
-import com.labstack.MqttConnectHandler;
-import com.labstack.MqttMessageHandler;
+import com.labstack.ConnectConnectionHandler;
+import com.labstack.ConnectMessageHandler;
 import com.labstack.android.Client;
-import com.labstack.android.Mqtt;
 import com.labstack.cookbook.android.R;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String tag = "location-tracker";
     private static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected Client client;
-    protected Mqtt mqtt;
+    protected com.labstack.android.Connect connect;
     private String clientId;
     private LocationManager locationManager;
     private Map<String, Message> devices = new HashMap<>();
@@ -52,20 +51,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize LabStack mqtt service
+        // Initialize LabStack connect service
         client = new Client(this, "<ACCOUNT_ID>", "<API_KEY>");
         clientId = InstanceID.getInstance(this).getId();
-        mqtt = client.mqtt(clientId);
-        mqtt.onConnect(new MqttConnectHandler() {
+        connect = client.connect(clientId);
+        connect.onConnect(new ConnectConnectionHandler() {
             @Override
             public void handle(boolean reconnect, String serverURI) {
-                mqtt.subscribe("tracker");
+                connect.subscribe("tracker");
                 @SuppressLint("MissingPermission")
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 publishMessage(location);
             }
         });
-        mqtt.onMessage(new MqttMessageHandler() {
+        connect.onMessage(new ConnectMessageHandler() {
             @Override
             public void handle(String topic, byte[] payload) {
                 try {
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     private void publishMessage(Location location) {
         Message message = new Message(clientId, location);
         String json = messageJsonAdapter.toJson(message);
-        mqtt.publish("tracker", json.getBytes());
+        connect.publish("tracker", json.getBytes());
     }
 
     private void updateUi() {
