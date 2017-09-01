@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize LabStack connect service
+        // Initialize LabStack queue service
         client = new Client(this, "<ACCOUNT_ID>", "<API_KEY>");
         clientId = InstanceID.getInstance(this).getId();
         connect = client.queue(clientId);
