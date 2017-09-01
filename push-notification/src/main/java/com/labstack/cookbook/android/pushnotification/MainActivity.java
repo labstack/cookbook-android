@@ -9,16 +9,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.iid.InstanceID;
-import com.labstack.ConnectConnectionHandler;
-import com.labstack.ConnectMessageHandler;
+import com.labstack.QueueConnectHandler;
+import com.labstack.QueueMessageHandler;
 import com.labstack.android.Client;
-import com.labstack.android.Connect;
+import com.labstack.android.Queue;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
     protected Client client;
-    protected Connect connect;
+    protected Queue connect;
     private String clientId;
     private NotificationManager notificationManager;
     private int notificationId;
@@ -31,14 +31,14 @@ public class MainActivity extends AppCompatActivity {
         // Initialize LabStack connect service
         client = new Client(this, "ie8t5fgcb6s2vaxgg02y", "VouXFKK2A1TkuMUVz3wV2zvmapIdRuFM");
         clientId = InstanceID.getInstance(this).getId();
-        connect = client.connect(clientId);
-        connect.onConnect(new ConnectConnectionHandler() {
+        connect = client.queue(clientId);
+        connect.onConnect(new QueueConnectHandler() {
             @Override
             public void handle() {
                 connect.subscribe("broadcast");
             }
         });
-        connect.onMessage(new ConnectMessageHandler() {
+        connect.onMessage(new QueueMessageHandler() {
             @Override
             public void handle(String topic, byte[] payload) {
                 // Notify

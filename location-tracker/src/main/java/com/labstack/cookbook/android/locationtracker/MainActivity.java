@@ -19,8 +19,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.gms.iid.InstanceID;
-import com.labstack.ConnectConnectionHandler;
-import com.labstack.ConnectMessageHandler;
+import com.labstack.QueueConnectHandler;
+import com.labstack.QueueMessageHandler;
 import com.labstack.android.Client;
 import com.labstack.cookbook.android.R;
 import com.squareup.moshi.JsonAdapter;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String tag = "location-tracker";
     private static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected Client client;
-    protected com.labstack.android.Connect connect;
+    protected com.labstack.android.Queue connect;
     private String clientId;
     private LocationManager locationManager;
     private Map<String, Message> devices = new HashMap<>();
@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize LabStack connect service
         client = new Client(this, "<ACCOUNT_ID>", "<API_KEY>");
         clientId = InstanceID.getInstance(this).getId();
-        connect = client.connect(clientId);
-        connect.onConnect(new ConnectConnectionHandler() {
+        connect = client.queue(clientId);
+        connect.onConnect(new QueueConnectHandler() {
             @Override
             public void handle() {
                 connect.subscribe("tracker");
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 publishMessage(location);
             }
         });
-        connect.onMessage(new ConnectMessageHandler() {
+        connect.onMessage(new QueueMessageHandler() {
             @Override
             public void handle(String topic, byte[] payload) {
                 try {
