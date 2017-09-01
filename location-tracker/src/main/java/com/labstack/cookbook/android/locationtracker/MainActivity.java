@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         connect = client.connect(clientId);
         connect.onConnect(new ConnectConnectionHandler() {
             @Override
-            public void handle(boolean reconnect, String serverURI) {
+            public void handle() {
                 connect.subscribe("tracker");
                 @SuppressLint("MissingPermission")
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
