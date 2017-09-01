@@ -22,6 +22,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.labstack.QueueConnectHandler;
 import com.labstack.QueueMessageHandler;
 import com.labstack.android.Client;
+import com.labstack.android.Queue;
 import com.labstack.cookbook.android.R;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String tag = "location-tracker";
     private static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected Client client;
-    protected com.labstack.android.Queue connect;
+    protected Queue queue;
     private String clientId;
     private LocationManager locationManager;
     private Map<String, Message> devices = new HashMap<>();
@@ -54,17 +55,17 @@ public class MainActivity extends AppCompatActivity {
         // Initialize LabStack queue service
         client = new Client(this, "<ACCOUNT_ID>", "<API_KEY>");
         clientId = InstanceID.getInstance(this).getId();
-        connect = client.queue(clientId);
-        connect.onConnect(new QueueConnectHandler() {
+        queue = client.queue(clientId);
+        queue.onConnect(new QueueConnectHandler() {
             @Override
             public void handle() {
-                connect.subscribe("tracker");
+                queue.subscribe("tracker", false);
                 @SuppressLint("MissingPermission")
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 publishMessage(location);
             }
         });
-        connect.onMessage(new QueueMessageHandler() {
+        queue.onMessage(new QueueMessageHandler() {
             @Override
             public void handle(String topic, byte[] payload) {
                 try {
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     private void publishMessage(Location location) {
         Message message = new Message(clientId, location);
         String json = messageJsonAdapter.toJson(message);
-        connect.publish("tracker", json.getBytes());
+        queue.publish("tracker", json.getBytes());
     }
 
     private void updateUi() {

@@ -18,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
     protected Client client;
-    protected Queue connect;
+    protected Queue queue;
     private String clientId;
     private NotificationManager notificationManager;
     private int notificationId;
@@ -31,14 +31,14 @@ public class MainActivity extends AppCompatActivity {
         // Initialize LabStack queue service
         client = new Client(this, "ie8t5fgcb6s2vaxgg02y", "VouXFKK2A1TkuMUVz3wV2zvmapIdRuFM");
         clientId = InstanceID.getInstance(this).getId();
-        connect = client.queue(clientId);
-        connect.onConnect(new QueueConnectHandler() {
+        queue = client.queue(clientId);
+        queue.onConnect(new QueueConnectHandler() {
             @Override
             public void handle() {
-                connect.subscribe("broadcast");
+                queue.subscribe("broadcast", false);
             }
         });
-        connect.onMessage(new QueueMessageHandler() {
+        queue.onMessage(new QueueMessageHandler() {
             @Override
             public void handle(String topic, byte[] payload) {
                 // Notify
