@@ -4,7 +4,7 @@ import android.location.Location;
 
 import java.util.Date;
 
-public class Message {
+public class Payload {
     private Date time;
     private String deviceId;
     private double latitude;
@@ -12,7 +12,7 @@ public class Message {
     private double altitude;
     private float speed;
 
-    public Message(String deviceId, Location location) {
+    public Payload(String deviceId, Location location) {
         time = new Date();
         this.deviceId = deviceId;
         if (location != null) {

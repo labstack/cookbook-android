@@ -9,16 +9,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.iid.InstanceID;
-import com.labstack.QueueConnectHandler;
-import com.labstack.QueueMessageHandler;
+import com.labstack.MessageConnectHandler;
+import com.labstack.MessageDataHandler;
 import com.labstack.android.Client;
-import com.labstack.android.Queue;
+import com.labstack.android.Message;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
     protected Client client;
-    protected Queue queue;
+    protected Message message;
     private String clientId;
     private NotificationManager notificationManager;
     private int notificationId;
@@ -28,19 +28,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize LabStack queue service
-        client = new Client(this, "ie8t5fgcb6s2vaxgg02y", "VouXFKK2A1TkuMUVz3wV2zvmapIdRuFM");
+        // Initialize LabStack message service
+        client = new Client(this, "<ACCOUNT_ID>", "<API_KEY>");
         clientId = InstanceID.getInstance(this).getId();
-        queue = client.queue(clientId);
-        queue.onConnect(new QueueConnectHandler() {
+        message = client.message(clientId);
+        message.onConnect(new MessageConnectHandler() {
             @Override
             public void handle() {
-                queue.subscribe("broadcast", false);
+                message.subscribe("broadcast", false);
             }
         });
-        queue.onMessage(new QueueMessageHandler() {
+        message.onMessage(new MessageDataHandler() {
             @Override
-            public void handle(String topic, byte[] payload) {
+            public void handle(String topic, byte[] data) {
                 // Notify
                 Intent intent = new Intent(MainActivity.this, MainActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent,
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 Notification notification = new Notification.Builder(MainActivity.this)
                         .setSmallIcon(R.drawable.ic_push_notification)
                         .setContentTitle("Broadcast")
-                        .setContentText(new String(payload))
+                        .setContentText(new String(data))
                         .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
                         .setContentIntent(pendingIntent)
                         .build();

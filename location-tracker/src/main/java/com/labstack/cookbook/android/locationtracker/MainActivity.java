@@ -19,10 +19,10 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.gms.iid.InstanceID;
-import com.labstack.QueueConnectHandler;
-import com.labstack.QueueMessageHandler;
+import com.labstack.MessageConnectHandler;
+import com.labstack.MessageDataHandler;
 import com.labstack.android.Client;
-import com.labstack.android.Queue;
+import com.labstack.android.Message;
 import com.labstack.cookbook.android.R;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -40,37 +40,37 @@ public class MainActivity extends AppCompatActivity {
     private static final String tag = "location-tracker";
     private static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected Client client;
-    protected Queue queue;
+    protected Message message;
     private String clientId;
     private LocationManager locationManager;
-    private Map<String, Message> devices = new HashMap<>();
+    private Map<String, Payload> devices = new HashMap<>();
     private Moshi moshi = new Moshi.Builder().add(Date.class, new Rfc3339DateJsonAdapter().nullSafe()).build();
-    private JsonAdapter<Message> messageJsonAdapter = moshi.adapter(Message.class);
+    private JsonAdapter<Payload> payloadJsonAdapter = moshi.adapter(Payload.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize LabStack queue service
+        // Initialize LabStack message service
         client = new Client(this, "<ACCOUNT_ID>", "<API_KEY>");
         clientId = InstanceID.getInstance(this).getId();
-        queue = client.queue(clientId);
-        queue.onConnect(new QueueConnectHandler() {
+        message = client.message(clientId);
+        message.onConnect(new MessageConnectHandler() {
             @Override
             public void handle() {
-                queue.subscribe("tracker", false);
+                message.subscribe("tracker", false);
                 @SuppressLint("MissingPermission")
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                publishMessage(location);
+                publishLocation(location);
             }
         });
-        queue.onMessage(new QueueMessageHandler() {
+        message.onMessage(new MessageDataHandler() {
             @Override
-            public void handle(String topic, byte[] payload) {
+            public void handle(String topic, byte[] data) {
                 try {
-                    Message message = messageJsonAdapter.fromJson(new String(payload));
-                    devices.put(message.getDeviceId(), message);
+                    Payload payload = payloadJsonAdapter.fromJson(new String(data));
+                    devices.put(payload.getDeviceId(), payload);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                publishMessage(location);
+                publishLocation(location);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -110,10 +110,10 @@ public class MainActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 4, locationListener);
     }
 
-    private void publishMessage(Location location) {
-        Message message = new Message(clientId, location);
-        String json = messageJsonAdapter.toJson(message);
-        queue.publish("tracker", json.getBytes());
+    private void publishLocation(Location location) {
+        Payload payload = new Payload(clientId, location);
+        String json = payloadJsonAdapter.toJson(payload);
+        message.publish("tracker", json.getBytes());
     }
 
     private void updateUi() {
@@ -138,8 +138,8 @@ public class MainActivity extends AppCompatActivity {
         row.addView(altitudeSpeed);
         table.addView(row);
 
-        for (Map.Entry<String, Message> entry : devices.entrySet()) {
-            Message message = entry.getValue();
+        for (Map.Entry<String, Payload> entry : devices.entrySet()) {
+            Payload payload = entry.getValue();
 
             table.setColumnStretchable(0, true);
             table.setColumnStretchable(1, true);
@@ -150,12 +150,12 @@ public class MainActivity extends AppCompatActivity {
             row = new TableRow(this);
             row.setPadding(16, 16, 16, 16);
             timeDevice = new TextView(this);
-            timeDevice.setText(dateFormatter.format(message.getTime()) + "\n" + message.getDeviceId());
+            timeDevice.setText(dateFormatter.format(payload.getTime()) + "\n" + payload.getDeviceId());
             location = new TextView(this);
             if (Geocoder.isPresent()) {
                 Geocoder coder = new Geocoder(this);
                 try {
-                    List<Address> addresses = coder.getFromLocation(message.getLatitude(), message.getLongitude(), 1);
+                    List<Address> addresses = coder.getFromLocation(payload.getLatitude(), payload.getLongitude(), 1);
                     if (addresses.size() == 1) {
                         Address address = addresses.get(0);
                         location.setText(address.getLocality());
@@ -165,14 +165,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             altitudeSpeed = new TextView(this);
-            altitudeSpeed.setText(String.format("%.2f m\n%.2f m/s", message.getAltitude(), message.getSpeed()));
+            altitudeSpeed.setText(String.format("%.2f m\n%.2f m/s", payload.getAltitude(), payload.getSpeed()));
             row.addView(timeDevice);
             row.addView(location);
             row.addView(altitudeSpeed);
             table.addView(row);
 
 
-            if (message.getDeviceId().equals(clientId)) {
+            if (payload.getDeviceId().equals(clientId)) {
                 row.setBackgroundColor(Color.YELLOW);
             }
         }
